@@ -3,7 +3,7 @@
 #include "CinemaData.h"
 #include <vector>
 
-using namespace std;
+
 
 void creatBooking(
     vector<Movie>& movies, 
