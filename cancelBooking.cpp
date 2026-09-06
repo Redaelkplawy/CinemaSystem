@@ -18,10 +18,12 @@ void cancelBooking(
 
     cout << "Enter booking ID to cancel: ";
     cin >> bookingId;
-
-    for (int i = 0; i < bookings.size(); i++)
-    {
-        if (bookings[i].bookingId == bookingId)
+int index == findBookingById(bokingid);
+if (index == -1) {
+    cout << "booking not found";
+}
+  
+        if (bookings[index].bookingId == bookingId)
         {
             if (!bookings[i].isActive)
             {
@@ -43,7 +45,7 @@ void cancelBooking(
 
                     break;
                 }
-            }
+            
 
             bookings[i].isActive = false;
 
