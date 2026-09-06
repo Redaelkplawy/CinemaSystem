@@ -33,12 +33,12 @@ if (index == -1) {
 
             for (int j = 0; j < movies.size(); j++)
             {
-                if (movies[j].movieId == bookings[i].movieId)
+                if (movies[j].movieId == bookings[index].movieId)
                 {
-                    for (int k = 0; k < bookings[i].seats.size(); k++)
+                    for (int k = 0; k < bookings[index].seats.size(); k++)
                     {
-                        int row = bookings[i].seats[k].first;
-                        int column = bookings[i].seats[k].second;
+                        int row = bookings[index].seats[k].first;
+                        int column = bookings[index].seats[k].second;
 
                         movies[j].seats[row][column] = 'O';
                     }
@@ -47,7 +47,7 @@ if (index == -1) {
                 }
             
 
-            bookings[i].isActive = false;
+            bookings[index].isActive = false;
 
             cout << "Booking cancelled successfully.\n";
             return;
