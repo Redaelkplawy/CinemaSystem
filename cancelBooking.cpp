@@ -23,9 +23,9 @@ if (index == -1) {
     cout << "booking not found";
 }
   
-        if (bookings[index].bookingId == bookingId)
-        {
-            if (!bookings[i].isActive)
+        
+        
+            if (!bookings[index].isActive)
             {
                 cout << "This booking is already cancelled.\n";
                 return;
@@ -51,7 +51,7 @@ if (index == -1) {
 
             cout << "Booking cancelled successfully.\n";
             return;
-        }
+        
     }
 
     cout << "Booking not found.\n";
