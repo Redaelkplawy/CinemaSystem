@@ -1,217 +1,124 @@
 #include "createBooking.h"
-#include "cinemaData.h"
-#include <iostream>
-#include <vector>
+#include "displaySeats.h"          
+#include "isSeatAvailable.h"       
+#include "bookSeat.h"              
+#include "calculateTotalPrice.h"   
+#include "getIntInput.h"           
+#include "getStringInput.h"       
 
+#include <iostream>
 using namespace std;
 
-void creatBooking(
-    vector<Movie>& movies,
-    vector<Booking>& bookings
-)
+void createBooking(vector<Movie>& movieList, vector<Booking>& bookingList)
 {
-    // «· √ﬂœ „‰ ÊÃÊœ √›·«„
-    if (movies.empty())
-    {
+    // 1. ÿßŸÑÿ™ÿ≠ŸÇŸÇ ŸÖŸÜ Ÿàÿ¨ŸàÿØ ÿ£ŸÅŸÑÿßŸÖ
+    if (movieList.empty()) {
         cout << "No movies available.\n";
-
         return;
     }
 
-    // ⁄‰Ê«‰ ﬁ«∆„… «·√›·«„
+    // 2. ÿπÿ±ÿ∂ ŸÇÿßÿ¶ŸÖÿ© ÿßŸÑÿ£ŸÅŸÑÿßŸÖ
     cout << "\n===== Movies =====\n";
-
-    // ⁄—÷ «·√›·«„
-    for (int i = 0; i < movies.size(); i++)
-    {
-        cout << i + 1 << ". "
-            << movies[i].name
-            << " - "
-            << movies[i].price
-            << endl;
-    }
-     // «Œ Ì«— ›Ì·„
-    int movieChoice;
-
-    cout << "\nChoose a movie: ";
-    cin >> movieChoice;
-
-    while (movieChoice < 1 || movieChoice > movies.size())
-    {
-        cout << "Invalid choice. Choose again: ";
-        cin >> movieChoice;
+    for (size_t i = 0; i < movieList.size(); i++) {
+        cout << (i + 1) << ". "
+             << movieList[i].name
+             << " - " << movieList[i].price << " EGP\n";
     }
 
-    Movie& selectedMovie = movies[movieChoice - 1];
+    // 3. ÿßÿÆÿ™Ÿäÿßÿ± ŸÅŸäŸÑŸÖ
+    cout << "\nChoose a movie (1-" << movieList.size() << "): ";
+    int movieChoice = getIntInput(1, static_cast<int>(movieList.size()));
+    Movie& selectedMovie = movieList[movieChoice - 1];
 
-    cout << "\nYou selected: "
-        << selectedMovie.name
-        << endl;
-    //⁄—÷ «·„ﬁ«⁄œ
-    cout << "\n===== Seats =====\n";
+    cout << "\nYou selected: " << selectedMovie.name << "\n";
 
-    for (int i = 0; i < selectedMovie.seats.size(); i++)
-    {
-        cout << "Row " << i + 1 << ": ";
+    // 4. ÿπÿ±ÿ∂ ÿÆÿ±Ÿäÿ∑ÿ© ÿßŸÑŸÖŸÇÿßÿπÿØ
+    displaySeats(selectedMovie.seats);
 
-        for (int j = 0; j < selectedMovie.seats[i].size(); j++)
-        {
-            cout << selectedMovie.seats[i][j] << " ";
-        }
-
-        cout << endl;
-        
-    }
-    
-    //«Œ Ì«— „ﬁ⁄œ
-    int seatCount;
-
+    // 5. ÿßÿÆÿ™Ÿäÿßÿ± ÿπÿØÿØ ÿßŸÑÿ™ÿ∞ÿßŸÉÿ±
     cout << "\nHow many seats do you want? ";
-    cin >> seatCount;
-
-    while (seatCount <= 0)
-    {
-        cout << "Invalid number. Enter again: ";
-        cin >> seatCount;
-    }
+    int seatCount = getIntInput(1, 10);
 
     Booking newBooking;
-
     newBooking.movieId = selectedMovie.movieId;
     newBooking.movieName = selectedMovie.name;
     newBooking.seatCount = seatCount;
     newBooking.pricePerSeat = selectedMovie.price;
 
-    for (int i = 0; i < seatCount; i++)
-    {
-        int row;
-        int column;
+    // 6. ÿßÿÆÿ™Ÿäÿßÿ± ÿßŸÑŸÖŸÇÿßÿπÿØ (ÿ≠ŸÑŸÇÿ© Ÿàÿßÿ≠ÿØÿ© ŸÖÿπ ÿ•ÿπÿßÿØÿ© ÿßŸÑŸÖÿ≠ÿßŸàŸÑÿ© ÿπŸÜÿØ ÿßŸÑÿ≠ÿ¨ÿ≤ ÿßŸÑŸÖÿ≤ÿØŸàÿ¨)
+    int bookedSeats = 0;
+    while (bookedSeats < seatCount) {
+        cout << "\n--- Seat " << (bookedSeats + 1) << " of " << seatCount << " ---\n";
 
-        cout << "\nSeat " << i + 1 << endl;
+        cout << "Enter row (1-" << selectedMovie.seats.size() << "): ";
+        int row = getIntInput(1, static_cast<int>(selectedMovie.seats.size())) - 1;
 
-        cout << "Enter row: ";
-        cin >> row;
+        cout << "Enter column (1-" << selectedMovie.seats[row].size() << "): ";
+        int col = getIntInput(1, static_cast<int>(selectedMovie.seats[row].size())) - 1;
 
-        cout << "Enter column: ";
-        cin >> column;
-
-        while (
-            row < 1 ||
-            row > selectedMovie.seats.size() ||
-            column < 1 ||
-            column > selectedMovie.seats[row - 1].size()
-            )
-        {
-            cout << "Invalid seat. Try again.\n";
-
-            cout << "Enter row: ";
-            cin >> row;
-
-            cout << "Enter column: ";
-            cin >> column;
+        if (!isSeatAvailable(selectedMovie.seats, row, col)) {
+            cout << "This seat is already booked. Please choose another.\n";
+            continue;  // ‚úÖ ÿ®ÿØŸÑ i-- (ÿ£ŸÉÿ´ÿ± Ÿàÿ∂Ÿàÿ≠ÿßŸã)
         }
 
-        if (selectedMovie.seats[row - 1][column - 1] == 'X')
-        {
-            cout << "This seat is already booked.\n";
-
-            i--;
-            continue;// loop⁄‘«‰ „ÌŒ—Ã‘ »—Â «· 
-        }
-
-        selectedMovie.seats[row - 1][column - 1] = 'X';
-
-        newBooking.seats.push_back(
-            { row - 1, column - 1 }
-        );
-
+        bookSeat(selectedMovie.seats, row, col);
+        newBooking.seats.push_back({row, col});
+        bookedSeats++;
         cout << "Seat booked successfully.\n";
     }
-    // Õ”«» ”⁄— «· –ﬂ—Â
-    // Calculate original price
-    newBooking.originalPrice =
-        newBooking.pricePerSeat * newBooking.seatCount;
 
-    // Calculate discount
-    if (newBooking.seatCount > 4)
-    {
-        newBooking.discountAmount =
-            newBooking.originalPrice * 0.10;
-    }
-    else
-    {
-        newBooking.discountAmount = 0.0;
-    }
+    // 7. ÿ≠ÿ≥ÿßÿ® ÿßŸÑÿ≥ÿπÿ± ÿ®ÿßÿ≥ÿ™ÿÆÿØÿßŸÖ ÿØÿßŸÑÿ© ŸÖÿ≥ÿßÿπÿØÿ©
+    double discountAmount = 0.0;
+    newBooking.originalPrice = newBooking.pricePerSeat * newBooking.seatCount;
+    newBooking.totalPrice = calculateTotalPrice(
+        newBooking.pricePerSeat,
+        newBooking.seatCount,
+        discountAmount
+    );
+    newBooking.discountAmount = discountAmount;
 
-    // Calculate total price
-    newBooking.totalPrice =
-        newBooking.originalPrice - newBooking.discountAmount;
-    cout << "\nOriginal Price: "
-        << newBooking.originalPrice
-        << endl;
+    cout << "\n--- Price Details ---\n";
+    cout << "Original Price: " << newBooking.originalPrice << " EGP\n";
+    cout << "Discount: " << newBooking.discountAmount << " EGP\n";
+    cout << "Total Price: " << newBooking.totalPrice << " EGP\n";
 
-    cout << "Discount: "
-        << newBooking.discountAmount
-        << endl;
-
-    cout << "Total Price: "
-        << newBooking.totalPrice
-        << endl;
-    
+    // 8. ÿ®ŸäÿßŸÜÿßÿ™ ÿßŸÑÿπŸÖŸäŸÑ
     cout << "\n===== Customer Information =====\n";
-
     cout << "Enter customer ID: ";
-    cin >> newBooking.customer.customerId;
+    newBooking.customer.customerId = getIntInput(1, 999999);
 
-    cout << "Enter full name: ";
-    cin.ignore();
-    getline(cin, newBooking.customer.fullName);
+    newBooking.customer.fullName = getStringInput("Enter full name: ");
+    newBooking.customer.phone = getStringInput("Enter phone: ");
 
-    cout << "Enter phone: ";
-    cin >> newBooking.customer.phone;
-    //id ticket
-    if (bookings.empty())
-    {
-        newBooking.bookingId = 1001;
+    // 9. ÿ™ŸàŸÑŸäÿØ ÿ±ŸÇŸÖ ÿßŸÑÿ≠ÿ¨ÿ≤ (ŸÖŸÜ ÿßŸÑÿ´ÿßÿ®ÿ™ STARTING_BOOKING_ID)
+    if (bookingList.empty()) {
+        newBooking.bookingId = STARTING_BOOKING_ID;
+    } else {
+        newBooking.bookingId = bookingList.back().bookingId + 1;
     }
-    else
-    {
-        newBooking.bookingId = bookings.back().bookingId + 1;
-    }
-    //  «—ÌŒ «·ÕÃ“
+
+    // 10. ÿ™ÿßÿ±ŸäÿÆ ÿßŸÑÿ≠ÿ¨ÿ≤
     cout << "\n===== Booking Date =====\n";
+    cout << "Enter day (1-31): ";
+    newBooking.bookingDate.day = getIntInput(1, 31);
 
-    cout << "Enter day: ";
-    cin >> newBooking.bookingDate.day;
+    cout << "Enter month (1-12): ";
+    newBooking.bookingDate.month = getIntInput(1, 12);
 
-    cout << "Enter month: ";
-    cin >> newBooking.bookingDate.month;
+    cout << "Enter year (2020-2100): ";
+    newBooking.bookingDate.year = getIntInput(2020, 2100);
 
-    cout << "Enter year: ";
-    cin >> newBooking.bookingDate.year;
-    // Õ›Ÿ «·ÕÃ“ 
-    bookings.push_back(newBooking);
-    //—”«·… «·‰Ã«Õ
-    cout << "\nBooking completed successfully!\n";
+    // 11. ÿ≠ŸÅÿ∏ ÿßŸÑÿ≠ÿ¨ÿ≤
+    bookingList.push_back(newBooking);
 
-    cout << "Booking ID: "
-        << newBooking.bookingId
-        << endl;
-
-    cout << "Movie: "
-        << newBooking.movieName
-        << endl;
-
-    cout << "Customer: "
-        << newBooking.customer.fullName
-        << endl;
-
-    cout << "Number of Seats: "
-        << newBooking.seatCount
-        << endl;cout << "total price : "
-        << newBooking.totalPrice 
-        << endl;
-
-   
-
+    // 12. ÿ±ÿ≥ÿßŸÑÿ© ÿßŸÑŸÜÿ¨ÿßÿ≠
+    cout << "\n========================================\n";
+    cout << "   Booking completed successfully!\n";
+    cout << "========================================\n";
+    cout << "Booking ID     : " << newBooking.bookingId << "\n";
+    cout << "Movie          : " << newBooking.movieName << "\n";
+    cout << "Customer       : " << newBooking.customer.fullName << "\n";
+    cout << "Number of Seats: " << newBooking.seatCount << "\n";
+    cout << "Total Price    : " << newBooking.totalPrice << " EGP\n";
+    cout << "========================================\n";
 }
