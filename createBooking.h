@@ -5,7 +5,10 @@
 
 
 
-void creatBooking(
+void createBooking(
+    vector<Movie>& movies, 
+    vector<Booking>& bookings
+);
     vector<Movie>& movies, 
     vector<Booking>& bookings
 );
