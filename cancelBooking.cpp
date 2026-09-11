@@ -1,58 +1,43 @@
 #include "cancelBooking.h"
+#include "findBookingById.h"  
+#include "unbookSeat.h"        
 #include <iostream>
 
 using namespace std;
 
-void cancelBooking(
-    vector<Booking>& bookings,
-    vector<Movie>& movies
-)
-{
-    if (bookings.empty())
-    {
+void cancelBooking(vector<Booking>& bookingList, vector<Movie>& movieList) {
+    if (bookingList.empty()) {
         cout << "No bookings available.\n";
         return;
     }
 
     int bookingId;
-
     cout << "Enter booking ID to cancel: ";
     cin >> bookingId;
-int index == findBookingById(bokingid);
-if (index == -1) {
-    cout << "booking not found";
-}
-  
-        
-        
-            if (!bookings[index].isActive)
-            {
-                cout << "This booking is already cancelled.\n";
-                return;
-            }
 
-            for (int j = 0; j < movies.size(); j++)
-            {
-                if (movies[j].movieId == bookings[index].movieId)
-                {
-                    for (int k = 0; k < bookings[index].seats.size(); k++)
-                    {
-                        int row = bookings[index].seats[k].first;
-                        int column = bookings[index].seats[k].second;
-
-                        movies[j].seats[row][column] = 'O';
-                    }
-
-                    break;
-                }
-            
-
-            bookings[index].isActive = false;
-
-            cout << "Booking cancelled successfully.\n";
-            return;
-        
+    // البحث عن الحجز
+    Booking* booking = findBookingById(bookingList, bookingId);
+    if (booking == nullptr) {
+        cout << "Booking not found.\n";
+        return;
     }
 
-    cout << "Booking not found.\n";
+    if (!booking->isActive) {
+        cout << "This booking is already cancelled.\n";
+        return;
+    }
+
+    // إرجاع المقاعد
+    for (auto& movie : movieList) {
+        if (movie.movieId == booking->movieId) {
+            for (const auto& seat : booking->seats) {
+                // استخدام unbookSeat لإرجاع المقعد
+                unbookSeat(movie.seats, seat.first, seat.second);
+            }
+            break;
+        }
+    }
+
+    booking->isActive = false;
+    cout << "Booking cancelled successfully.\n";
 }
