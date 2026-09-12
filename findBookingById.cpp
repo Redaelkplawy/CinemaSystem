@@ -1,18 +1,13 @@
 #include "findBookingById.h"
-
 Booking* findBookingById(
-    vector<Booking>& bookings,
+    vector<Booking>& bookingList,
     int bookingId
 )
 {
-    
-    for (int i = 0; i < bookings.size(); i++)
+    for (auto& booking : bookingList)
     {
-        if (bookings[i].bookingId == bookingId)
-        {
-            return &bookings[i];
-        }
+        if (booking.bookingId == bookingId)
+            return &booking;
     }
-
     return nullptr;
 }
