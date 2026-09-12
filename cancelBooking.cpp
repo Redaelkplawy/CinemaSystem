@@ -1,6 +1,6 @@
 #include "cancelBooking.h"
-#include "findBookingById.h"  
-#include "unbookSeat.h"        
+#include "findBookingById.h"
+#include "unbookSeat.h"
 #include <iostream>
 
 using namespace std;
@@ -15,7 +15,6 @@ void cancelBooking(vector<Booking>& bookingList, vector<Movie>& movieList) {
     cout << "Enter booking ID to cancel: ";
     cin >> bookingId;
 
-    // البحث عن الحجز
     Booking* booking = findBookingById(bookingList, bookingId);
     if (booking == nullptr) {
         cout << "Booking not found.\n";
@@ -27,12 +26,10 @@ void cancelBooking(vector<Booking>& bookingList, vector<Movie>& movieList) {
         return;
     }
 
-    // إرجاع المقاعد
     for (auto& movie : movieList) {
         if (movie.movieId == booking->movieId) {
-            for (const auto& seat : booking->seats) {
-                // استخدام unbookSeat لإرجاع المقعد
-                unbookSeat(movie.seats, seat.first, seat.second);
+            for (const auto& [row, col] : booking->seats) {
+                unbookSeat(movie.seats, row, col);
             }
             break;
         }
