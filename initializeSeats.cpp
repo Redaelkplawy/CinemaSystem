@@ -1,6 +1,5 @@
-#pragma once
+#include "initializeSeats.h"
 
-#include <vector>
-
-
-std::vector<std::vector<char>> initializeSeats(int rows, int cols);
+std::vector<std::vector<char>> initializeSeats(int rows, int cols) {
+    return std::vector<std::vector<char>>(rows, std::vector<char>(cols, 'O'));
+}
